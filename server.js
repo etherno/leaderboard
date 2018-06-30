@@ -17,18 +17,18 @@ const i18nextMiddleware = require('i18next-express-middleware')
 const Backend = require('i18next-node-fs-backend')
 const { i18nInstance } = require('./i18n')
 
-const admin = require("firebase-admin")
+// const admin = require("firebase-admin")
 
-const serviceAccount = require("./privateKey.json")
+// const serviceAccount = require("./privateKey.json")
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://givethvideowalloffame.firebaseio.com",
-  storageBucket: "givethvideowalloffame.appspot.com",
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: "https://givethvideowalloffame.firebaseio.com",
+//   storageBucket: "givethvideowalloffame.appspot.com",
+// });
 
-var db = admin.database();
-var bucket = admin.storage().bucket();
+// var db = admin.database();
+// var bucket = admin.storage().bucket();
 
 // init i18next with serverside settings
 // using i18next-express-middleware
