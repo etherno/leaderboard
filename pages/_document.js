@@ -17,7 +17,7 @@ export default class MyDocument extends Document {
           <title>Etherno - Leaderboard</title>
           <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
           <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
-          <link href="https://fonts.googleapis.com/css?family=Quicksand:200,300,400,700" rel="stylesheet" />
+          <link href="https://fonts.googleapis.com/css?family=Lekton:700|Open+Sans" rel="stylesheet" />
           {this.props.styleTags}
         </Head>
         <body>

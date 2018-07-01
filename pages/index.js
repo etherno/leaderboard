@@ -8,9 +8,10 @@ initFirebase();
 const MainImage = styled.div`
   padding: 2rem;
   margin: 1rem;
-  border: solid black 1px;
+  border: 1px solid rgba(70, 48, 235, .4);
   border-radius: .5rem;
   text-align: center;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, .1);
 `
 
 const Field = styled.div`
@@ -19,13 +20,16 @@ const Field = styled.div`
 
 const FieldTitle = styled.p`
   margin: 0;
-  font-size: 20px;
+  font-size: 18px;
+  font-family: 'Lekton';
+  color: rgba(0,0,32,.9);
 `
 
 const FieldText = styled.p`
-  margin-top: .5rem;
-  font-size: 16px;
+  margin-top: 2px;
+  font-size: 14px;
   color: grey;
+  font-family: 'Open Sans';
 `
 
 export default class App extends Component {
