@@ -32,6 +32,24 @@ const FieldText = styled.p`
   font-family: 'Open Sans';
 `
 
+const LeaderboadSection = styled.div`
+  margin-top: 4rem;
+  padding: 1rem;
+`
+
+const LeaderboadTitle = FieldTitle.extend`
+  font-size: 24px;
+  text-align: center;
+`
+
+const LeaderboardCard = styled.div`
+  border: 1px solid rgba(70, 48, 235, .4);
+  border-radius: .5rem;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, .1);
+  padding: 1rem;
+  margin-top: 1rem;
+`
+
 export default class App extends Component {
   static async getInitialProps({ query }) {
     return query;
@@ -60,6 +78,18 @@ export default class App extends Component {
             You should be able to generate as many fields as you like. (title, about and extra are all fields)
           </FieldText>
         </Field>
+        <LeaderboadSection>
+          <LeaderboadTitle>Leaderboard</LeaderboadTitle>
+          <LeaderboardCard>
+            Rank #1
+          </LeaderboardCard>
+          <LeaderboardCard>
+            Rank #2
+          </LeaderboardCard>
+          <LeaderboardCard>
+            Rank #3
+          </LeaderboardCard>
+        </LeaderboadSection>
       </div>
     )
   }
