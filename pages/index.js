@@ -48,6 +48,40 @@ const LeaderboardCard = styled.div`
   box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, .1);
   padding: 1rem;
   margin-top: 1rem;
+  font-family: 'Lekton';
+`
+
+const CardText = styled.div`
+  font-family: 'Lekton';
+  display: inline-block;
+  margin-right: 1rem;
+`
+
+const Address = styled.div`
+  font-family: 'Open Sans';
+  font-size: 14px;
+  padding: .125rem .25rem;
+  background: rgba(70,48,235,.1);
+  border: 1px solid rgba(70,48,235,.4);
+  border-radius: 4px;
+  color: #4630eb;
+  display: inline-block;
+  overflow-x: auto;
+`
+
+const Amount = styled.div`
+  font-family: 'Lekton';
+  font-size: 30px;
+  text-align: center;
+  margin-top: 1rem;
+`
+
+const CardField = styled.div`
+  white-space: nowrap;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  margin-top: .5rem;
 `
 
 export default class App extends Component {
@@ -81,7 +115,18 @@ export default class App extends Component {
         <LeaderboadSection>
           <LeaderboadTitle>Leaderboard</LeaderboadTitle>
           <LeaderboardCard>
-            Rank #1
+            <CardField>
+              <CardText>Rank #1</CardText>
+              <Address>0x5adf43dd006c6c36506e2b2dfa352e60002d22dc</Address>
+            </CardField>
+            <CardField>
+              <CardText>Message</CardText>
+              <Address>Hello this is a test message</Address>
+            </CardField>
+            <CardField>
+              <CardText>Amount</CardText>
+              <Address>1234 ETH</Address>
+            </CardField>
           </LeaderboardCard>
           <LeaderboardCard>
             Rank #2
