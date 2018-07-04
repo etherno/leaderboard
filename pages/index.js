@@ -49,6 +49,7 @@ const LeaderboardCard = styled.div`
   padding: 1rem;
   margin-top: 1rem;
   font-family: 'Lekton';
+  display: flex;
 `
 
 const CardText = styled.div`
@@ -84,6 +85,28 @@ const CardField = styled.div`
   margin-top: .5rem;
 `
 
+const FirstHalf = styled.div`
+  width: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  flex-direction: column;
+`
+
+const FirstHalfText = styled.p`
+  margin: 0;
+  margin-top: .5rem;
+  font-size: 20px;
+`
+
+const SecondHalf = styled.div`
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`
+
 export default class App extends Component {
   static async getInitialProps({ query }) {
     return query;
@@ -115,18 +138,22 @@ export default class App extends Component {
         <LeaderboadSection>
           <LeaderboadTitle>Leaderboard</LeaderboadTitle>
           <LeaderboardCard>
-            <CardField>
-              <CardText>Rank #1</CardText>
-              <Address>0x5adf43dd006c6c36506e2b2dfa352e60002d22dc</Address>
-            </CardField>
-            <CardField>
-              <CardText>Message</CardText>
-              <Address>Hello this is a test message</Address>
-            </CardField>
-            <CardField>
-              <CardText>Amount</CardText>
-              <Address>1234 ETH</Address>
-            </CardField>
+            <FirstHalf>
+              <div>
+                <FirstHalfText>Rank #1</FirstHalfText>
+                <FirstHalfText>1234 ETH</FirstHalfText>
+              </div>
+            </FirstHalf>
+            <SecondHalf>
+              <CardField>
+                <CardText>Address</CardText>
+                <Address>0x5adf43dd006c6c36506e2b2dfa352e60002d22dc</Address>
+              </CardField>
+              <CardField>
+                <CardText>Message</CardText>
+                <Address>Hello this is a test message</Address>
+              </CardField>
+            </SecondHalf>
           </LeaderboardCard>
           <LeaderboardCard>
             Rank #2
