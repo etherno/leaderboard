@@ -107,6 +107,26 @@ const SecondHalf = styled.div`
   justify-content: center;
 `
 
+const AddressInputContainer = styled.div`
+  position: fixed;
+  bottom: 0;
+  box-sizing: border-box;
+  width: 100%;
+  padding 0 1rem 1rem 1rem;
+`
+
+const AddressInput = styled.input`
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, .1);
+  height: 3rem;
+  width: 100%;
+  border: 1px solid #E6E6E6;
+  border-radius: 3px;
+  padding-left: 1rem;
+  box-sizing: border-box;
+  font-family: 'Open Sans';
+`
+
+
 export default class App extends Component {
   static async getInitialProps({ query }) {
     return query;
@@ -162,6 +182,9 @@ export default class App extends Component {
             Rank #3
           </LeaderboardCard>
         </LeaderboadSection>
+        <AddressInputContainer>
+          <AddressInput placeholder="Enter address.." />
+        </AddressInputContainer>
       </div>
     )
   }
