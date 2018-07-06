@@ -25,6 +25,10 @@ const FieldTitle = styled.p`
   color: rgba(0,0,32,.9);
 `
 
+const FieldTitleCenter = FieldTitle.extend`
+  text-align: center;
+`
+
 const FieldText = styled.p`
   margin-top: 2px;
   font-size: 14px;
@@ -33,7 +37,8 @@ const FieldText = styled.p`
 `
 
 const LeaderboadSection = styled.div`
-  margin-top: 4rem;
+  margin-top: 2rem;
+  margin-bottom: 4rem;
   padding: 1rem;
 `
 
@@ -125,7 +130,21 @@ const AddressInput = styled.input`
   box-sizing: border-box;
   font-family: 'Open Sans';
 `
+const DonationItemImg = styled.img`
+  width: 10rem;
+  border: 1px solid rgba(70, 48, 235, .4);
+  border-radius: .5rem;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, .1);
+`
 
+const DonateSection = styled.div`
+  text-align: center;
+  margin-top: 2.5rem;
+`
+
+const DonationItem = styled.div`
+  margin: 1rem 0;
+`
 
 export default class App extends Component {
   static async getInitialProps({ query }) {
@@ -155,6 +174,17 @@ export default class App extends Component {
             You should be able to generate as many fields as you like. (title, about and extra are all fields)
           </FieldText>
         </Field>
+        <DonateSection>
+          <LeaderboadTitle>Ways to Donate</LeaderboadTitle>
+          <DonationItem>
+            <DonationItemImg src="http://localhost:3000/static/images/metamask.svg" />
+            <FieldTitleCenter>MetaMask</FieldTitleCenter>
+          </DonationItem>
+          <DonationItem>
+            <DonationItemImg src="http://localhost:3000/static/images/giveth-qr.svg" />
+            <FieldTitleCenter>Scan QR Code</FieldTitleCenter>
+          </DonationItem>
+        </DonateSection>
         <LeaderboadSection>
           <LeaderboadTitle>Leaderboard</LeaderboadTitle>
           <LeaderboardCard>
@@ -176,10 +206,40 @@ export default class App extends Component {
             </SecondHalf>
           </LeaderboardCard>
           <LeaderboardCard>
-            Rank #2
+            <FirstHalf>
+              <div>
+                <FirstHalfText>Rank #2</FirstHalfText>
+                <FirstHalfText>1234 ETH</FirstHalfText>
+              </div>
+            </FirstHalf>
+            <SecondHalf>
+              <CardField>
+                <CardText>Address</CardText>
+                <Address>0x5adf43dd006c6c36506e2b2dfa352e60002d22dc</Address>
+              </CardField>
+              <CardField>
+                <CardText>Message</CardText>
+                <Address>Hello this is a test message</Address>
+              </CardField>
+            </SecondHalf>
           </LeaderboardCard>
           <LeaderboardCard>
-            Rank #3
+            <FirstHalf>
+              <div>
+                <FirstHalfText>Rank #3</FirstHalfText>
+                <FirstHalfText>1234 ETH</FirstHalfText>
+              </div>
+            </FirstHalf>
+            <SecondHalf>
+              <CardField>
+                <CardText>Address</CardText>
+                <Address>0x5adf43dd006c6c36506e2b2dfa352e60002d22dc</Address>
+              </CardField>
+              <CardField>
+                <CardText>Message</CardText>
+                <Address>Hello this is a test message</Address>
+              </CardField>
+            </SecondHalf>
           </LeaderboardCard>
         </LeaderboadSection>
         <AddressInputContainer>
