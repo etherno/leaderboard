@@ -129,6 +129,9 @@ const AddressInput = styled.input`
   padding-left: 1rem;
   box-sizing: border-box;
   font-family: 'Open Sans';
+  &:focus {
+    outline: none;
+  }
 `
 const DonationItemImg = styled.img`
   width: 10rem;
@@ -144,6 +147,11 @@ const DonateSection = styled.div`
 
 const DonationItem = styled.div`
   margin: 1rem 0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  &:hover {
+    transform: translateY(-.5rem);
+  }
 `
 
 export default class App extends Component {
