@@ -1,17 +1,22 @@
-import React, { Component } from "react";
-import styled from 'styled-components';
+import React, { Component } from 'react'
+import styled from 'styled-components'
 // import { withI18next } from '../lib/withI18next';
-import initFirebase from '../lib/initFirebase';
+import initFirebase from '../lib/initFirebase'
+import Web3Local from "web3";
 
-initFirebase();
+const web3local = new Web3Local(
+  new Web3Local.providers.WebsocketProvider("wss://mainnet.infura.io/_ws")
+);
+
+initFirebase()
 
 const MainImage = styled.div`
   padding: 2rem;
   margin: 1rem;
-  border: 1px solid rgba(70, 48, 235, .4);
-  border-radius: .5rem;
+  border: 1px solid rgba(70, 48, 235, 0.4);
+  border-radius: 0.5rem;
   text-align: center;
-  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, .1);
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
 `
 
 const Field = styled.div`
@@ -22,7 +27,7 @@ const FieldTitle = styled.p`
   margin: 0;
   font-size: 18px;
   font-family: 'Lekton';
-  color: rgba(0,0,32,.9);
+  color: rgba(0, 0, 32, 0.9);
 `
 
 const FieldTitleCenter = FieldTitle.extend`
@@ -48,9 +53,9 @@ const LeaderboadTitle = FieldTitle.extend`
 `
 
 const LeaderboardCard = styled.div`
-  border: 1px solid rgba(70, 48, 235, .4);
-  border-radius: .5rem;
-  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, .1);
+  border: 1px solid rgba(70, 48, 235, 0.4);
+  border-radius: 0.5rem;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
   padding: 1rem;
   margin-top: 1rem;
   font-family: 'Lekton';
@@ -66,9 +71,9 @@ const CardText = styled.div`
 const Address = styled.div`
   font-family: 'Open Sans';
   font-size: 14px;
-  padding: .125rem .25rem;
-  background: rgba(70,48,235,.1);
-  border: 1px solid rgba(70,48,235,.4);
+  padding: 0.125rem 0.25rem;
+  background: rgba(70, 48, 235, 0.1);
+  border: 1px solid rgba(70, 48, 235, 0.4);
   border-radius: 4px;
   color: #4630eb;
   display: inline-block;
@@ -87,7 +92,7 @@ const CardField = styled.div`
   max-width: 100%;
   display: flex;
   align-items: center;
-  margin-top: .5rem;
+  margin-top: 0.5rem;
 `
 
 const FirstHalf = styled.div`
@@ -101,7 +106,7 @@ const FirstHalf = styled.div`
 
 const FirstHalfText = styled.p`
   margin: 0;
-  margin-top: .5rem;
+  margin-top: 0.5rem;
   font-size: 20px;
 `
 
@@ -121,10 +126,10 @@ const AddressInputContainer = styled.div`
 `
 
 const AddressInput = styled.input`
-  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, .1);
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
   height: 3rem;
   width: 100%;
-  border: 1px solid #E6E6E6;
+  border: 1px solid #e6e6e6;
   border-radius: 3px;
   padding-left: 1rem;
   box-sizing: border-box;
@@ -135,9 +140,9 @@ const AddressInput = styled.input`
 `
 const DonationItemImg = styled.img`
   width: 10rem;
-  border: 1px solid rgba(70, 48, 235, .4);
-  border-radius: .5rem;
-  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, .1);
+  border: 1px solid rgba(70, 48, 235, 0.4);
+  border-radius: 0.5rem;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
 `
 
 const DonateSection = styled.div`
@@ -150,21 +155,53 @@ const DonationItem = styled.div`
   cursor: pointer;
   transition: all 0.15s ease;
   &:hover {
-    transform: translateY(-.5rem);
+    transform: translateY(-0.5rem);
   }
 `
+const leaderboardAbi = [
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, name: 'sender', type: 'address' },
+      { indexed: false, name: 'amount', type: 'uint256' },
+    ],
+    name: 'FundsSent',
+    type: 'event',
+  },
+]
+
+const multisigAbi = [
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, name: 'sender', type: 'address' },
+      { indexed: false, name: 'value', type: 'uint256' },
+    ],
+    name: 'Deposit',
+    type: 'event',
+  },
+]
+
 
 export default class App extends Component {
   static async getInitialProps({ query }) {
-    return query;
+    return query
+  }
+
+  handleAddressSubmit = e => {
+    if (e.keyCode === 13) {
+      const Contract = new web3local.eth.Contract(leaderboardAbi, '0x5adf43dd006c6c36506e2b2dfa352e60002d22dc')
+      Contract.getPastEvents('FundsSent', {
+        fromBlock: '4448139',
+        toBlock: "latest",
+      }).then((data) => console.log(data))
+    }
   }
 
   render() {
     return (
       <div>
-        <MainImage>
-          PICTURE
-        </MainImage>
+        <MainImage>PICTURE</MainImage>
         <Field>
           <FieldTitle>Title</FieldTitle>
           <FieldText>Donation Leaderboard</FieldText>
@@ -172,14 +209,16 @@ export default class App extends Component {
         <Field>
           <FieldTitle>About</FieldTitle>
           <FieldText>
-            This leaderboard project is a way for people to generate their own donation leaderboards
-            so they can easily share their generated donation page and get people to donate.
+            This leaderboard project is a way for people to generate their own
+            donation leaderboards so they can easily share their generated
+            donation page and get people to donate.
           </FieldText>
         </Field>
         <Field>
           <FieldTitle>Extra</FieldTitle>
           <FieldText>
-            You should be able to generate as many fields as you like. (title, about and extra are all fields)
+            You should be able to generate as many fields as you like. (title,
+            about and extra are all fields)
           </FieldText>
         </Field>
         <DonateSection>
@@ -251,7 +290,10 @@ export default class App extends Component {
           </LeaderboardCard>
         </LeaderboadSection>
         <AddressInputContainer>
-          <AddressInput placeholder="Enter address.." />
+          <AddressInput
+            placeholder="Enter address.."
+            onKeyUp={this.handleAddressSubmit}
+          />
         </AddressInputContainer>
       </div>
     )
