@@ -3,6 +3,7 @@ import styled from 'styled-components'
 // import { withI18next } from '../lib/withI18next';
 import initFirebase from '../lib/initFirebase'
 import Web3Local from "web3";
+import BigNumber from 'bignumber.js'
 
 const web3local = new Web3Local(
   new Web3Local.providers.WebsocketProvider("wss://mainnet.infura.io/_ws")
@@ -158,7 +159,7 @@ const DonationItem = styled.div`
     transform: translateY(-0.5rem);
   }
 `
-const leaderboardAbi = [
+const GeneralABI = [
   {
     anonymous: false,
     inputs: [
@@ -168,9 +169,6 @@ const leaderboardAbi = [
     name: 'FundsSent',
     type: 'event',
   },
-]
-
-const multisigAbi = [
   {
     anonymous: false,
     inputs: [
@@ -182,19 +180,48 @@ const multisigAbi = [
   },
 ]
 
+// const getEventsFromAddress = async (address) => {
+//   const Contract = new web3local.eth.Contract(GeneralABI, address)
+//   const firstEvents = await Contract.getPastEvents('FundsSent', {
+//     fromBlock: '4000000',
+//     toBlock: "latest",
+//   })
+//   const secondEvents = await Contract.getPastEvents('Deposit', {
+//     fromBlock: '4000000',
+//     toBlock: "latest",
+//   })
+
+//   if (firstEvents.length) { return firstEvents }
+//   if (secondEvents.length) { return secondEvents }
+//   return false
+// }
+
+// console.log(data.reduce((acc, test) => new BigNumber(test.returnValues.amount).plus(acc), 0).toString()
+// 0x5adf43dd006c6c36506e2b2dfa352e60002d22dc
+// TODO:
+// Desktop UI
+// Parse events
+// List addresses with respective amounts
+// Get total amount 
+// Loading state
+// Info Modals
+// Authentication
+// Add/Remove/Edit fields
+// Picture uploading/removal
 
 export default class App extends Component {
   static async getInitialProps({ query }) {
     return query
   }
 
+  async componentWillMount() {
+    const initialEvents = await getEventsFromAddress('0x5adf43dd006c6c36506e2b2dfa352e60002d22dc')
+  }
+
   handleAddressSubmit = e => {
     if (e.keyCode === 13) {
-      const Contract = new web3local.eth.Contract(leaderboardAbi, '0x5adf43dd006c6c36506e2b2dfa352e60002d22dc')
-      Contract.getPastEvents('FundsSent', {
-        fromBlock: '4448139',
-        toBlock: "latest",
-      }).then((data) => console.log(data))
+      // Check if e.target.value is an address
+      // Get new events for specific address
     }
   }
 
