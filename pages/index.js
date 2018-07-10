@@ -180,20 +180,31 @@ const GeneralABI = [
   },
 ]
 
-// const getEventsFromAddress = async (address) => {
-//   const Contract = new web3local.eth.Contract(GeneralABI, address)
-//   const firstEvents = await Contract.getPastEvents('FundsSent', {
-//     fromBlock: '4000000',
-//     toBlock: "latest",
-//   })
-//   const secondEvents = await Contract.getPastEvents('Deposit', {
-//     fromBlock: '4000000',
-//     toBlock: "latest",
-//   })
+const getEventsFromAddress = async (address) => {
+  const Contract = new web3local.eth.Contract(GeneralABI, address)
+  const firstEvents = await Contract.getPastEvents('FundsSent', {
+    fromBlock: '4000000',
+    toBlock: "latest",
+  })
+  
+  if (firstEvents.length) { return firstEvents }
 
-//   if (firstEvents.length) { return firstEvents }
-//   if (secondEvents.length) { return secondEvents }
-//   return false
+  const secondEvents = await Contract.getPastEvents('Deposit', {
+    fromBlock: '4000000',
+    toBlock: "latest",
+  })
+
+  if (secondEvents.length) { return secondEvents }
+  return false
+}
+
+// const etherscanApiLinks = {
+//   extTx:   "https://api.etherscan.io/api?module=account&action=txlistinternal&address=" +
+//     donationAddress +
+//     "&startblock=0&endblock=99999999&sort=asc&apikey=6DIUB7X6S92YJR6KXKF8V8ZU55IXT5PN2S",
+//   intTx: "https://api.etherscan.io/api?module=account&action=txlist&address=" +
+//     donationAddress +
+//     "&startblock=0&endblock=99999999&sort=asc&apikey=6DIUB7X6S92YJR6KXKF8V8ZU55IXT5PN2S"
 // }
 
 // console.log(data.reduce((acc, test) => new BigNumber(test.returnValues.amount).plus(acc), 0).toString()
@@ -214,8 +225,18 @@ export default class App extends Component {
     return query
   }
 
-  async componentWillMount() {
-    const initialEvents = await getEventsFromAddress('0x5adf43dd006c6c36506e2b2dfa352e60002d22dc')
+  async componentDidMount() {
+    const pastEvents = await getEventsFromAddress('0x00cf36853aa4024fb5bf5cc377dfd85844b411a0')
+    let donors = {}
+    const test = pastEvents.reduce((acc, event) => {
+      const currentAddress = event.returnValues[0]
+      const currentAmount = event.returnValues[1]
+      const oldAmmount = acc[event.returnValues[0]]
+      acc[event.returnValues[0]] = new BigNumber(currentAmount).dividedBy(10**18).plus(oldAmmount || 0)
+      return acc
+    }, {})
+    console.log(test)
+    
   }
 
   handleAddressSubmit = e => {
