@@ -226,23 +226,33 @@ export default class App extends Component {
   }
 
   async componentDidMount() {
-    const pastEvents = await getEventsFromAddress('0x00cf36853aa4024fb5bf5cc377dfd85844b411a0')
-    let donors = {}
+    const pastEvents = await getEventsFromAddress('0x5adf43dd006c6c36506e2b2dfa352e60002d22dc')
     const test = pastEvents.reduce((acc, event) => {
       const currentAddress = event.returnValues[0]
-      const currentAmount = event.returnValues[1]
-      const oldAmmount = acc[event.returnValues[0]]
-      acc[event.returnValues[0]] = new BigNumber(currentAmount).dividedBy(10**18).plus(oldAmmount || 0)
+      const currentAmount = web3local.utils.fromWei(event.returnValues[1], "ether")
+      if (!acc[currentAddress]) {
+        acc[currentAddress] = {
+          address: '',
+          amount: 0,
+          message: '',
+          txHashes: [],
+        }
+      }
+      const oldAmmount = acc[currentAddress].amount
+      acc[currentAddress].address = event.address
+      acc[currentAddress].amount = oldAmmount ? parseFloat(currentAmount) + oldAmmount : parseFloat(currentAmount)
+      acc[currentAddress].message = event.message
+      acc[currentAddress].txHashes.push(event.transactionHash)
       return acc
     }, {})
     console.log(test)
-    
   }
 
   handleAddressSubmit = e => {
     if (e.keyCode === 13) {
       // Check if e.target.value is an address
       // Get new events for specific address
+      // Delete previous event subscribtion and create a new one
     }
   }
 
