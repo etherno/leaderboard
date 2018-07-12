@@ -2,12 +2,13 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 // import { withI18next } from '../lib/withI18next';
 import initFirebase from '../lib/initFirebase'
-import Web3Local from "web3";
+import Web3Local from 'web3'
 import BigNumber from 'bignumber.js'
+import Emojify from "react-emojione";
 
 const web3local = new Web3Local(
-  new Web3Local.providers.WebsocketProvider("wss://mainnet.infura.io/_ws")
-);
+  new Web3Local.providers.WebsocketProvider('wss://mainnet.infura.io/_ws'),
+)
 
 initFirebase()
 
@@ -180,22 +181,35 @@ const GeneralABI = [
   },
 ]
 
-const getEventsFromAddress = async (address) => {
+const getEventsFromAddress = async address => {
   const Contract = new web3local.eth.Contract(GeneralABI, address)
   const firstEvents = await Contract.getPastEvents('FundsSent', {
     fromBlock: '4000000',
-    toBlock: "latest",
+    toBlock: 'latest',
   })
-  
-  if (firstEvents.length) { return firstEvents }
+
+  if (firstEvents.length) {
+    return firstEvents
+  }
 
   const secondEvents = await Contract.getPastEvents('Deposit', {
     fromBlock: '4000000',
-    toBlock: "latest",
+    toBlock: 'latest',
   })
 
-  if (secondEvents.length) { return secondEvents }
+  if (secondEvents.length) {
+    return secondEvents
+  }
   return false
+}
+
+function formatAmount(amount) {
+  const splittedAmount = (amount + '').split('.')
+  if (splittedAmount[1]) {
+    return splittedAmount[0] + '.' + splittedAmount[1].slice(0,2)
+  }
+
+  return splittedAmount[0]
 }
 
 // const etherscanApiLinks = {
@@ -213,7 +227,7 @@ const getEventsFromAddress = async (address) => {
 // Desktop UI
 // Parse events
 // List addresses with respective amounts
-// Get total amount 
+// Get total amount
 // Loading state
 // Info Modals
 // Authentication
@@ -225,11 +239,32 @@ export default class App extends Component {
     return query
   }
 
+  state = {
+    leaderboardList: [],
+  }
+
   async componentDidMount() {
-    const pastEvents = await getEventsFromAddress('0x5adf43dd006c6c36506e2b2dfa352e60002d22dc')
-    const test = pastEvents.reduce((acc, event) => {
+    const pastEvents = await getEventsFromAddress(
+      '0x5adf43dd006c6c36506e2b2dfa352e60002d22dc',
+    )
+    const eventsWithMessage = await Promise.all(
+      pastEvents.map(event => {
+        return web3local.eth
+          .getTransaction(event.transactionHash)
+          .then(txData => {
+            event.message = txData.input.length
+              ? web3local.utils.hexToAscii(txData.input)
+              : ''
+            return event
+          })
+      }),
+    )
+    const normalizedEvents = eventsWithMessage.reduce((acc, event) => {
       const currentAddress = event.returnValues[0]
-      const currentAmount = web3local.utils.fromWei(event.returnValues[1], "ether")
+      const currentAmount = web3local.utils.fromWei(
+        event.returnValues[1],
+        'ether',
+      )
       if (!acc[currentAddress]) {
         acc[currentAddress] = {
           address: '',
@@ -240,12 +275,17 @@ export default class App extends Component {
       }
       const oldAmmount = acc[currentAddress].amount
       acc[currentAddress].address = event.address
-      acc[currentAddress].amount = oldAmmount ? parseFloat(currentAmount) + oldAmmount : parseFloat(currentAmount)
+      acc[currentAddress].amount = oldAmmount
+        ? parseFloat(currentAmount) + oldAmmount
+        : parseFloat(currentAmount)
       acc[currentAddress].message = event.message
       acc[currentAddress].txHashes.push(event.transactionHash)
       return acc
     }, {})
-    console.log(test)
+    const leaderboardList = Object.getOwnPropertyNames(normalizedEvents).map(
+      address => normalizedEvents[address],
+    )
+    this.setState({ leaderboardList })
   }
 
   handleAddressSubmit = e => {
@@ -257,6 +297,8 @@ export default class App extends Component {
   }
 
   render() {
+    const { leaderboardList } = this.state
+
     return (
       <div>
         <MainImage>PICTURE</MainImage>
@@ -291,61 +333,26 @@ export default class App extends Component {
           </DonationItem>
         </DonateSection>
         <LeaderboadSection>
-          <LeaderboadTitle>Leaderboard</LeaderboadTitle>
-          <LeaderboardCard>
-            <FirstHalf>
-              <div>
-                <FirstHalfText>Rank #1</FirstHalfText>
-                <FirstHalfText>1234 ETH</FirstHalfText>
-              </div>
-            </FirstHalf>
-            <SecondHalf>
-              <CardField>
-                <CardText>Address</CardText>
-                <Address>0x5adf43dd006c6c36506e2b2dfa352e60002d22dc</Address>
-              </CardField>
-              <CardField>
-                <CardText>Message</CardText>
-                <Address>Hello this is a test message</Address>
-              </CardField>
-            </SecondHalf>
-          </LeaderboardCard>
-          <LeaderboardCard>
-            <FirstHalf>
-              <div>
-                <FirstHalfText>Rank #2</FirstHalfText>
-                <FirstHalfText>1234 ETH</FirstHalfText>
-              </div>
-            </FirstHalf>
-            <SecondHalf>
-              <CardField>
-                <CardText>Address</CardText>
-                <Address>0x5adf43dd006c6c36506e2b2dfa352e60002d22dc</Address>
-              </CardField>
-              <CardField>
-                <CardText>Message</CardText>
-                <Address>Hello this is a test message</Address>
-              </CardField>
-            </SecondHalf>
-          </LeaderboardCard>
-          <LeaderboardCard>
-            <FirstHalf>
-              <div>
-                <FirstHalfText>Rank #3</FirstHalfText>
-                <FirstHalfText>1234 ETH</FirstHalfText>
-              </div>
-            </FirstHalf>
-            <SecondHalf>
-              <CardField>
-                <CardText>Address</CardText>
-                <Address>0x5adf43dd006c6c36506e2b2dfa352e60002d22dc</Address>
-              </CardField>
-              <CardField>
-                <CardText>Message</CardText>
-                <Address>Hello this is a test message</Address>
-              </CardField>
-            </SecondHalf>
-          </LeaderboardCard>
+          {leaderboardList.sort((a, b) => b.amount - a.amount).map(({amount, address, message}, idx) => (
+            <LeaderboardCard>
+              <FirstHalf>
+                <div>
+                  <FirstHalfText>Rank #{idx+1}</FirstHalfText>
+                  <FirstHalfText>{formatAmount(amount)} ETH</FirstHalfText>
+                </div>
+              </FirstHalf>
+              <SecondHalf>
+                <CardField>
+                  <CardText>Address</CardText>
+                  <Address>{address}</Address>
+                </CardField>
+                <CardField>
+                  <CardText>Message</CardText>
+                  <Address><Emojify>{message}</Emojify></Address>
+                </CardField>
+              </SecondHalf>
+            </LeaderboardCard>
+          ))}
         </LeaderboadSection>
         <AddressInputContainer>
           <AddressInput
