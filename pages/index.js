@@ -348,7 +348,7 @@ export default class App extends Component {
                 </CardField>
                 <CardField>
                   <CardText>Message</CardText>
-                  <Address><Emojify>{message}</Emojify></Address>
+                  <Address><Emojify>{message || '-'}</Emojify></Address>
                 </CardField>
               </SecondHalf>
             </LeaderboardCard>
