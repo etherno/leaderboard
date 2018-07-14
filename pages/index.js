@@ -64,6 +64,10 @@ const LeaderboardCard = styled.div`
   display: flex;
 `
 
+const LeaderboardCardLoading = LeaderboardCard.extend`
+  justify-content: center;
+`
+
 const CardText = styled.div`
   font-family: 'Lekton';
   display: inline-block;
@@ -333,6 +337,11 @@ export default class App extends Component {
           </DonationItem>
         </DonateSection>
         <LeaderboadSection>
+          {!leaderboardList.length && (
+            <LeaderboardCardLoading>
+              Loading...
+            </LeaderboardCardLoading>
+          )}
           {leaderboardList.sort((a, b) => b.amount - a.amount).map(({amount, address, message}, idx) => (
             <LeaderboardCard>
               <FirstHalf>
