@@ -291,10 +291,11 @@ export default class App extends Component {
 
   state = {
     leaderboardList: [],
+    currentDonationAddress: '0x5adf43dd006c6c36506e2b2dfa352e60002d22dc',
   }
 
   async componentDidMount() {
-    const leaderboardList = await getLeaderboardList('0x5adf43dd006c6c36506e2b2dfa352e60002d22dc')
+    const leaderboardList = await getLeaderboardList(this.state.currentDonationAddress)
     if (leaderboardList) {
       this.setState({ leaderboardList })
     }
@@ -310,6 +311,7 @@ export default class App extends Component {
           this.setState({
             leaderboardList,
             loading: false,
+            currentDonationAddress: value,
           })
           // clear input field
         }
@@ -319,11 +321,11 @@ export default class App extends Component {
   }
 
   render() {
-    const { leaderboardList, loading } = this.state
+    const { currentDonationAddress, leaderboardList, loading } = this.state
 
     return (
       <div>
-        <MainImage>PICTURE</MainImage>
+        {/* <MainImage>PICTURE</MainImage>
         <Field>
           <FieldTitle>Title</FieldTitle>
           <FieldText>Donation Leaderboard</FieldText>
@@ -342,9 +344,9 @@ export default class App extends Component {
             You should be able to generate as many fields as you like. (title,
             about and extra are all fields)
           </FieldText>
-        </Field>
+        </Field> */}
         <DonateSection>
-          <LeaderboadTitle>Ways to Donate</LeaderboadTitle>
+          <LeaderboadTitle>Ways to Donate to {currentDonationAddress.slice(0,6) + '..' + currentDonationAddress.slice(-4)}</LeaderboadTitle>
           <DonationItem>
             <DonationItemImg src="/static/images/metamask.svg" />
             <FieldTitleCenter>MetaMask</FieldTitleCenter>
