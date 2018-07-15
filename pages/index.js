@@ -74,7 +74,7 @@ const CardText = styled.div`
   margin-right: 1rem;
 `
 
-const Address = styled.div`
+const Address = styled.a`
   font-family: 'Open Sans';
   font-size: 14px;
   padding: 0.125rem 0.25rem;
@@ -84,6 +84,10 @@ const Address = styled.div`
   color: #4630eb;
   display: inline-block;
   overflow-x: auto;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 `
 
 const Amount = styled.div`
@@ -277,10 +281,10 @@ export default class App extends Component {
           txHashes: [],
         }
       }
-      const oldAmmount = acc[currentAddress].amount
-      acc[currentAddress].address = event.address
-      acc[currentAddress].amount = oldAmmount
-        ? parseFloat(currentAmount) + oldAmmount
+      const oldAmount = acc[currentAddress].amount
+      acc[currentAddress].address = currentAddress
+      acc[currentAddress].amount = oldAmount
+        ? parseFloat(currentAmount) + oldAmount
         : parseFloat(currentAmount)
       acc[currentAddress].message = event.message
       acc[currentAddress].txHashes.push(event.transactionHash)
@@ -353,7 +357,7 @@ export default class App extends Component {
               <SecondHalf>
                 <CardField>
                   <CardText>Address</CardText>
-                  <Address>{address}</Address>
+                  <Address target="_blank" href={'https://etherscan.io/address/' + address}>{address}</Address>
                 </CardField>
                 <CardField>
                   <CardText>Message</CardText>
