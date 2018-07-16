@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import initFirebase from '../lib/initFirebase'
 import Web3Local from 'web3'
 import BigNumber from 'bignumber.js'
-import Emojify from "react-emojione";
+import Emojify from 'react-emojione'
 
 const web3local = new Web3Local(
   new Web3Local.providers.WebsocketProvider('wss://mainnet.infura.io/_ws'),
@@ -214,10 +214,52 @@ const getEventsFromAddress = async address => {
 function formatAmount(amount) {
   const splittedAmount = (amount + '').split('.')
   if (splittedAmount[1]) {
-    return splittedAmount[0] + '.' + splittedAmount[1].slice(0,2)
+    return splittedAmount[0] + '.' + splittedAmount[1].slice(0, 2)
   }
 
   return splittedAmount[0]
+}
+
+const getLeaderboardList = async (address) => {
+  const pastEvents = await getEventsFromAddress(address)
+  const eventsWithMessage = await Promise.all(
+    pastEvents.map(event => {
+      return web3local.eth
+        .getTransaction(event.transactionHash)
+        .then(txData => {
+          event.message = txData.input.length
+            ? web3local.utils.hexToAscii(txData.input)
+            : ''
+          return event
+        })
+    }),
+  )
+  const normalizedEvents = eventsWithMessage.reduce((acc, event) => {
+    const currentAddress = event.returnValues[0]
+    const currentAmount = web3local.utils.fromWei(
+      event.returnValues[1],
+      'ether',
+    )
+    if (!acc[currentAddress]) {
+      acc[currentAddress] = {
+        address: '',
+        amount: 0,
+        message: '',
+        txHashes: [],
+      }
+    }
+    const oldAmount = acc[currentAddress].amount
+    acc[currentAddress].address = currentAddress
+    acc[currentAddress].amount = oldAmount
+      ? parseFloat(currentAmount) + oldAmount
+      : parseFloat(currentAmount)
+    acc[currentAddress].message = event.message
+    acc[currentAddress].txHashes.push(event.transactionHash)
+    return acc
+  }, {})
+  return Object.getOwnPropertyNames(normalizedEvents).map(
+    address => normalizedEvents[address],
+  )
 }
 
 // const etherscanApiLinks = {
@@ -252,55 +294,23 @@ export default class App extends Component {
   }
 
   async componentDidMount() {
-    const pastEvents = await getEventsFromAddress(
-      '0x5adf43dd006c6c36506e2b2dfa352e60002d22dc',
-    )
-    const eventsWithMessage = await Promise.all(
-      pastEvents.map(event => {
-        return web3local.eth
-          .getTransaction(event.transactionHash)
-          .then(txData => {
-            event.message = txData.input.length
-              ? web3local.utils.hexToAscii(txData.input)
-              : ''
-            return event
-          })
-      }),
-    )
-    const normalizedEvents = eventsWithMessage.reduce((acc, event) => {
-      const currentAddress = event.returnValues[0]
-      const currentAmount = web3local.utils.fromWei(
-        event.returnValues[1],
-        'ether',
-      )
-      if (!acc[currentAddress]) {
-        acc[currentAddress] = {
-          address: '',
-          amount: 0,
-          message: '',
-          txHashes: [],
-        }
-      }
-      const oldAmount = acc[currentAddress].amount
-      acc[currentAddress].address = currentAddress
-      acc[currentAddress].amount = oldAmount
-        ? parseFloat(currentAmount) + oldAmount
-        : parseFloat(currentAmount)
-      acc[currentAddress].message = event.message
-      acc[currentAddress].txHashes.push(event.transactionHash)
-      return acc
-    }, {})
-    const leaderboardList = Object.getOwnPropertyNames(normalizedEvents).map(
-      address => normalizedEvents[address],
-    )
-    this.setState({ leaderboardList })
+    const leaderboardList = await getLeaderboardList('0x5adf43dd006c6c36506e2b2dfa352e60002d22dc')
+    if (leaderboardList) {
+      this.setState({ leaderboardList })
+    }
   }
 
-  handleAddressSubmit = e => {
+  handleAddressSubmit = async (e) => {
     if (e.keyCode === 13) {
+      const value = e.target.value
+      if (value.length === 42) {
+        const leaderboardList = await getLeaderboardList(value)
+        if (leaderboardList) {
+          this.setState({ leaderboardList })
+          // clear input field
+        }
+      }
       // Check if e.target.value is an address
-      // Get new events for specific address
-      // Delete previous event subscribtion and create a new one
     }
   }
 
@@ -342,30 +352,37 @@ export default class App extends Component {
         </DonateSection>
         <LeaderboadSection>
           {!leaderboardList.length && (
-            <LeaderboardCardLoading>
-              Loading...
-            </LeaderboardCardLoading>
+            <LeaderboardCardLoading>Loading...</LeaderboardCardLoading>
           )}
-          {leaderboardList.sort((a, b) => b.amount - a.amount).map(({amount, address, message}, idx) => (
-            <LeaderboardCard>
-              <FirstHalf>
-                <div>
-                  <FirstHalfText>Rank #{idx+1}</FirstHalfText>
-                  <FirstHalfText>{formatAmount(amount)} ETH</FirstHalfText>
-                </div>
-              </FirstHalf>
-              <SecondHalf>
-                <CardField>
-                  <CardText>Address</CardText>
-                  <Address target="_blank" href={'https://etherscan.io/address/' + address}>{address}</Address>
-                </CardField>
-                <CardField>
-                  <CardText>Message</CardText>
-                  <Address><Emojify>{message || '-'}</Emojify></Address>
-                </CardField>
-              </SecondHalf>
-            </LeaderboardCard>
-          ))}
+          {leaderboardList
+            .sort((a, b) => b.amount - a.amount)
+            .map(({ amount, address, message }, idx) => (
+              <LeaderboardCard>
+                <FirstHalf>
+                  <div>
+                    <FirstHalfText>Rank #{idx + 1}</FirstHalfText>
+                    <FirstHalfText>{formatAmount(amount)} ETH</FirstHalfText>
+                  </div>
+                </FirstHalf>
+                <SecondHalf>
+                  <CardField>
+                    <CardText>Address</CardText>
+                    <Address
+                      target="_blank"
+                      href={'https://etherscan.io/address/' + address}
+                    >
+                      {address}
+                    </Address>
+                  </CardField>
+                  <CardField>
+                    <CardText>Message</CardText>
+                    <Address>
+                      <Emojify>{message || '-'}</Emojify>
+                    </Address>
+                  </CardField>
+                </SecondHalf>
+              </LeaderboardCard>
+            ))}
         </LeaderboadSection>
         <AddressInputContainer>
           <AddressInput
