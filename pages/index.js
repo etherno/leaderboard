@@ -304,9 +304,13 @@ export default class App extends Component {
     if (e.keyCode === 13) {
       const value = e.target.value
       if (value.length === 42) {
+        this.setState({ loading: true })
         const leaderboardList = await getLeaderboardList(value)
         if (leaderboardList) {
-          this.setState({ leaderboardList })
+          this.setState({
+            leaderboardList,
+            loading: false,
+          })
           // clear input field
         }
       }
@@ -315,7 +319,7 @@ export default class App extends Component {
   }
 
   render() {
-    const { leaderboardList } = this.state
+    const { leaderboardList, loading } = this.state
 
     return (
       <div>
@@ -351,7 +355,7 @@ export default class App extends Component {
           </DonationItem>
         </DonateSection>
         <LeaderboadSection>
-          {!leaderboardList.length && (
+          {!leaderboardList.length || loading && (
             <LeaderboardCardLoading>Loading...</LeaderboardCardLoading>
           )}
           {leaderboardList
