@@ -346,16 +346,16 @@ export default class App extends Component {
         <DonateSection>
           <LeaderboadTitle>Ways to Donate</LeaderboadTitle>
           <DonationItem>
-            <DonationItemImg src="http://localhost:3000/static/images/metamask.svg" />
+            <DonationItemImg src="/static/images/metamask.svg" />
             <FieldTitleCenter>MetaMask</FieldTitleCenter>
           </DonationItem>
           <DonationItem>
-            <DonationItemImg src="http://localhost:3000/static/images/giveth-qr.svg" />
+            <DonationItemImg src="/static/images/giveth-qr.svg" />
             <FieldTitleCenter>Scan QR Code</FieldTitleCenter>
           </DonationItem>
         </DonateSection>
         <LeaderboadSection>
-          {!leaderboardList.length || loading && (
+          {(!leaderboardList.length || loading) && (
             <LeaderboardCardLoading>Loading...</LeaderboardCardLoading>
           )}
           {leaderboardList
