@@ -1,13 +1,13 @@
-import React, { Component } from 'react'
-import styled from 'styled-components'
+import React, { Component } from "react"
+import styled from "styled-components"
 // import { withI18next } from '../lib/withI18next';
-import initFirebase from '../lib/initFirebase'
-import Web3Local from 'web3'
-import BigNumber from 'bignumber.js'
-import Emojify from 'react-emojione'
+import initFirebase from "../lib/initFirebase"
+import Web3Local from "web3"
+import BigNumber from "bignumber.js"
+import Emojify from "react-emojione"
 
 const web3local = new Web3Local(
-  new Web3Local.providers.WebsocketProvider('wss://mainnet.infura.io/_ws'),
+  new Web3Local.providers.WebsocketProvider("wss://mainnet.infura.io/_ws"),
 )
 
 initFirebase()
@@ -28,7 +28,7 @@ const Field = styled.div`
 const FieldTitle = styled.p`
   margin: 0;
   font-size: 18px;
-  font-family: 'Lekton';
+  font-family: "Lekton";
   color: rgba(0, 0, 32, 0.9);
 `
 
@@ -40,18 +40,23 @@ const FieldText = styled.p`
   margin-top: 2px;
   font-size: 14px;
   color: grey;
-  font-family: 'Open Sans';
+  font-family: "Open Sans";
 `
 
 const LeaderboadSection = styled.div`
-  margin-top: 2rem;
   margin-bottom: 4rem;
   padding: 1rem;
 `
 
-const LeaderboadTitle = FieldTitle.extend`
+const LeaderboadTitle = styled.h1`
+  margin: 0;
   font-size: 24px;
+  font-family: "Lekton";
+  color: rgba(0, 0, 32, 0.9);
   text-align: center;
+  @media (min-width: 48em) {
+    font-size: 38px;
+  }
 `
 
 const LeaderboardCard = styled.div`
@@ -60,7 +65,7 @@ const LeaderboardCard = styled.div`
   box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
   padding: 1rem;
   margin-top: 1rem;
-  font-family: 'Lekton';
+  font-family: "Lekton";
   display: flex;
 `
 
@@ -69,13 +74,13 @@ const LeaderboardCardLoading = LeaderboardCard.extend`
 `
 
 const CardText = styled.div`
-  font-family: 'Lekton';
+  font-family: "Lekton";
   display: inline-block;
   margin-right: 1rem;
 `
 
 const Address = styled.a`
-  font-family: 'Open Sans';
+  font-family: "Open Sans";
   font-size: 14px;
   padding: 0.125rem 0.25rem;
   background: rgba(70, 48, 235, 0.1);
@@ -83,15 +88,15 @@ const Address = styled.a`
   border-radius: 4px;
   color: #4630eb;
   display: inline-block;
-  overflow-x: auto;
   text-decoration: none;
+  overflow: hidden;
   &:hover {
     text-decoration: underline;
   }
 `
 
 const Amount = styled.div`
-  font-family: 'Lekton';
+  font-family: "Lekton";
   font-size: 30px;
   text-align: center;
   margin-top: 1rem;
@@ -128,22 +133,21 @@ const SecondHalf = styled.div`
 `
 
 const AddressInputContainer = styled.div`
-  position: fixed;
-  bottom: 0;
   box-sizing: border-box;
   width: 100%;
-  padding 0 1rem 1rem 1rem;
+  padding 0 1rem;
+  max-width: 48rem;
 `
 
 const AddressInput = styled.input`
   box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
   height: 3rem;
   width: 100%;
-  border: 1px solid #e6e6e6;
+  border: 1px solid rgba(70, 48, 235, 0.4);
   border-radius: 3px;
   padding-left: 1rem;
   box-sizing: border-box;
-  font-family: 'Open Sans';
+  font-family: "Open Sans";
   &:focus {
     outline: none;
   }
@@ -160,49 +164,66 @@ const DonateSection = styled.div`
   margin-top: 2.5rem;
 `
 
+const DonationItemContainer = styled.div`
+  @media (min-width: 48em) {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+`
+
 const DonationItem = styled.div`
-  margin: 1rem 0;
+  margin: 1rem;
   cursor: pointer;
   transition: all 0.15s ease;
   &:hover {
     transform: translateY(-0.5rem);
   }
 `
+
+const ContainerTest = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 48rem;
+`
+
 const GeneralABI = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, name: 'sender', type: 'address' },
-      { indexed: false, name: 'amount', type: 'uint256' },
+      { indexed: true, name: "sender", type: "address" },
+      { indexed: false, name: "amount", type: "uint256" },
     ],
-    name: 'FundsSent',
-    type: 'event',
+    name: "FundsSent",
+    type: "event",
   },
   {
     anonymous: false,
     inputs: [
-      { indexed: true, name: 'sender', type: 'address' },
-      { indexed: false, name: 'value', type: 'uint256' },
+      { indexed: true, name: "sender", type: "address" },
+      { indexed: false, name: "value", type: "uint256" },
     ],
-    name: 'Deposit',
-    type: 'event',
+    name: "Deposit",
+    type: "event",
   },
 ]
 
 const getEventsFromAddress = async address => {
   const Contract = new web3local.eth.Contract(GeneralABI, address)
-  const firstEvents = await Contract.getPastEvents('FundsSent', {
-    fromBlock: '4000000',
-    toBlock: 'latest',
+  const firstEvents = await Contract.getPastEvents("FundsSent", {
+    fromBlock: "4000000",
+    toBlock: "latest",
   })
 
   if (firstEvents.length) {
     return firstEvents
   }
 
-  const secondEvents = await Contract.getPastEvents('Deposit', {
-    fromBlock: '4000000',
-    toBlock: 'latest',
+  const secondEvents = await Contract.getPastEvents("Deposit", {
+    fromBlock: "4000000",
+    toBlock: "latest",
   })
 
   if (secondEvents.length) {
@@ -212,15 +233,15 @@ const getEventsFromAddress = async address => {
 }
 
 function formatAmount(amount) {
-  const splittedAmount = (amount + '').split('.')
+  const splittedAmount = (amount + "").split(".")
   if (splittedAmount[1]) {
-    return splittedAmount[0] + '.' + splittedAmount[1].slice(0, 2)
+    return splittedAmount[0] + "." + splittedAmount[1].slice(0, 2)
   }
 
   return splittedAmount[0]
 }
 
-const getLeaderboardList = async (address) => {
+const getLeaderboardList = async address => {
   const pastEvents = await getEventsFromAddress(address)
   const eventsWithMessage = await Promise.all(
     pastEvents.map(event => {
@@ -229,7 +250,7 @@ const getLeaderboardList = async (address) => {
         .then(txData => {
           event.message = txData.input.length
             ? web3local.utils.hexToAscii(txData.input)
-            : ''
+            : ""
           return event
         })
     }),
@@ -238,13 +259,13 @@ const getLeaderboardList = async (address) => {
     const currentAddress = event.returnValues[0]
     const currentAmount = web3local.utils.fromWei(
       event.returnValues[1],
-      'ether',
+      "ether",
     )
     if (!acc[currentAddress]) {
       acc[currentAddress] = {
-        address: '',
+        address: "",
         amount: 0,
-        message: '',
+        message: "",
         txHashes: [],
       }
     }
@@ -262,6 +283,10 @@ const getLeaderboardList = async (address) => {
   )
 }
 
+function trimAddress(address) {
+  return (address.slice(0, 6) + ".." + address.slice(-4)).toLowerCase()
+}
+
 // const etherscanApiLinks = {
 //   extTx:   "https://api.etherscan.io/api?module=account&action=txlistinternal&address=" +
 //     donationAddress +
@@ -271,12 +296,12 @@ const getLeaderboardList = async (address) => {
 //     "&startblock=0&endblock=99999999&sort=asc&apikey=6DIUB7X6S92YJR6KXKF8V8ZU55IXT5PN2S"
 // }
 
-// console.log(data.reduce((acc, test) => new BigNumber(test.returnValues.amount).plus(acc), 0).toString()
 // 0x5adf43dd006c6c36506e2b2dfa352e60002d22dc
 // TODO:
 // Desktop UI
 // Parse events
 // List addresses with respective amounts
+// List all transactions
 // Get total amount
 // Loading state
 // Info Modals
@@ -291,17 +316,19 @@ export default class App extends Component {
 
   state = {
     leaderboardList: [],
-    currentDonationAddress: '0x5adf43dd006c6c36506e2b2dfa352e60002d22dc',
+    currentDonationAddress: "0x5adf43dd006c6c36506e2b2dfa352e60002d22dc",
   }
 
   async componentDidMount() {
-    const leaderboardList = await getLeaderboardList(this.state.currentDonationAddress)
+    const leaderboardList = await getLeaderboardList(
+      this.state.currentDonationAddress,
+    )
     if (leaderboardList) {
       this.setState({ leaderboardList })
     }
   }
 
-  handleAddressSubmit = async (e) => {
+  handleAddressSubmit = async e => {
     if (e.keyCode === 13) {
       const value = e.target.value
       if (value.length === 42) {
@@ -345,57 +372,63 @@ export default class App extends Component {
             about and extra are all fields)
           </FieldText>
         </Field> */}
-        <DonateSection>
-          <LeaderboadTitle>Ways to Donate to {currentDonationAddress.slice(0,6) + '..' + currentDonationAddress.slice(-4)}</LeaderboadTitle>
-          <DonationItem>
-            <DonationItemImg src="/static/images/metamask.svg" />
-            <FieldTitleCenter>MetaMask</FieldTitleCenter>
-          </DonationItem>
-          <DonationItem>
-            <DonationItemImg src="/static/images/giveth-qr.svg" />
-            <FieldTitleCenter>Scan QR Code</FieldTitleCenter>
-          </DonationItem>
-        </DonateSection>
-        <LeaderboadSection>
-          {(!leaderboardList.length || loading) && (
-            <LeaderboardCardLoading>Loading...</LeaderboardCardLoading>
-          )}
-          {leaderboardList
-            .sort((a, b) => b.amount - a.amount)
-            .map(({ amount, address, message }, idx) => (
-              <LeaderboardCard>
-                <FirstHalf>
-                  <div>
-                    <FirstHalfText>Rank #{idx + 1}</FirstHalfText>
-                    <FirstHalfText>{formatAmount(amount)} ETH</FirstHalfText>
-                  </div>
-                </FirstHalf>
-                <SecondHalf>
-                  <CardField>
-                    <CardText>Address</CardText>
-                    <Address
-                      target="_blank"
-                      href={'https://etherscan.io/address/' + address}
-                    >
-                      {address}
-                    </Address>
-                  </CardField>
-                  <CardField>
-                    <CardText>Message</CardText>
-                    <Address>
-                      <Emojify>{message || '-'}</Emojify>
-                    </Address>
-                  </CardField>
-                </SecondHalf>
-              </LeaderboardCard>
-            ))}
-        </LeaderboadSection>
-        <AddressInputContainer>
-          <AddressInput
-            placeholder="Enter address.."
-            onKeyUp={this.handleAddressSubmit}
-          />
-        </AddressInputContainer>
+        <ContainerTest>
+          <DonateSection>
+            <LeaderboadTitle>
+              Ways to Donate to {trimAddress(currentDonationAddress)}
+            </LeaderboadTitle>
+            <DonationItemContainer>
+              <DonationItem>
+                <DonationItemImg src="/static/images/metamask.svg" />
+                <FieldTitleCenter>MetaMask</FieldTitleCenter>
+              </DonationItem>
+              <DonationItem>
+                <DonationItemImg src="/static/images/giveth-qr.svg" />
+                <FieldTitleCenter>Scan QR Code</FieldTitleCenter>
+              </DonationItem>
+            </DonationItemContainer>
+            <AddressInputContainer>
+              <AddressInput
+                placeholder="Enter address.."
+                onKeyUp={this.handleAddressSubmit}
+              />
+            </AddressInputContainer>
+          </DonateSection>
+          <LeaderboadSection>
+            {(!leaderboardList.length || loading) && (
+              <LeaderboardCardLoading>Loading...</LeaderboardCardLoading>
+            )}
+            {leaderboardList
+              .sort((a, b) => b.amount - a.amount)
+              .map(({ amount, address, message }, idx) => (
+                <LeaderboardCard>
+                  <FirstHalf>
+                    <div>
+                      <FirstHalfText>Rank #{idx + 1}</FirstHalfText>
+                      <FirstHalfText>{formatAmount(amount)} ETH</FirstHalfText>
+                    </div>
+                  </FirstHalf>
+                  <SecondHalf>
+                    <CardField>
+                      <CardText>Address</CardText>
+                      <Address
+                        target="_blank"
+                        href={"https://etherscan.io/address/" + address}
+                      >
+                        {address}
+                      </Address>
+                    </CardField>
+                    <CardField>
+                      <CardText>Message</CardText>
+                      <Address>
+                        <Emojify>{message || "-"}</Emojify>
+                      </Address>
+                    </CardField>
+                  </SecondHalf>
+                </LeaderboardCard>
+              ))}
+          </LeaderboadSection>
+        </ContainerTest>
       </div>
     )
   }
