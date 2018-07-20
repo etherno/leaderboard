@@ -3,7 +3,6 @@ import styled from "styled-components"
 // import { withI18next } from '../lib/withI18next';
 import initFirebase from "../lib/initFirebase"
 import Web3Local from "web3"
-import BigNumber from "bignumber.js"
 import Emojify from "react-emojione"
 
 const web3local = new Web3Local(
@@ -108,6 +107,9 @@ const CardField = styled.div`
   display: flex;
   align-items: center;
   margin-top: 0.5rem;
+  @media (min-width: 48em) {
+    white-space: initial;
+  }
 `
 
 const FirstHalf = styled.div`
@@ -287,6 +289,13 @@ function trimAddress(address) {
   return (address.slice(0, 6) + ".." + address.slice(-4)).toLowerCase()
 }
 
+function verifyAddress(address) {
+  // TODO: improve
+  if (address && address.length === 42) {
+    return address
+  }
+}
+
 // const etherscanApiLinks = {
 //   extTx:   "https://api.etherscan.io/api?module=account&action=txlistinternal&address=" +
 //     donationAddress +
@@ -308,6 +317,7 @@ function trimAddress(address) {
 // Authentication
 // Add/Remove/Edit fields
 // Picture uploading/removal
+// Listen for events
 
 export default class App extends Component {
   static async getInitialProps({ query }) {
@@ -316,7 +326,7 @@ export default class App extends Component {
 
   state = {
     leaderboardList: [],
-    currentDonationAddress: "0x5adf43dd006c6c36506e2b2dfa352e60002d22dc",
+    currentDonationAddress: verifyAddress(this.props.address) || "0x5adf43dd006c6c36506e2b2dfa352e60002d22dc",
   }
 
   async componentDidMount() {
@@ -331,7 +341,7 @@ export default class App extends Component {
   handleAddressSubmit = async e => {
     if (e.keyCode === 13) {
       const value = e.target.value
-      if (value.length === 42) {
+      if (verifyAddress(value)) {
         this.setState({ loading: true })
         const leaderboardList = await getLeaderboardList(value)
         if (leaderboardList) {
