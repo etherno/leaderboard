@@ -191,6 +191,35 @@ const ContainerTest = styled.div`
   max-width: 48rem;
 `
 
+const Overlay = styled.div`
+  pointer-events: none;
+  position: fixed;
+  z-index: 400;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  opacity: 0.2;
+  background: rgb(0, 0, 32);
+`
+
+const Modal = styled.div`
+  border: 1px solid rgba(70, 48, 235, 0.4);
+  border-radius: 0.5rem;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  z-index: 500;
+  background-color: #ffffff;
+  width: 18rem;
+  height: 18rem;
+  max-width: 100%;
+  max-height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1rem;
+`
+
 const GeneralABI = [
   {
     anonymous: false,
@@ -326,15 +355,27 @@ export default class App extends Component {
 
   state = {
     leaderboardList: [],
-    currentDonationAddress: verifyAddress(this.props.address) || "0x5adf43dd006c6c36506e2b2dfa352e60002d22dc",
+    currentDonationAddress:
+      verifyAddress(this.props.address) ||
+      "0x5adf43dd006c6c36506e2b2dfa352e60002d22dc",
+    web3: null,
+    showMetaMaskModal: false,
   }
 
   async componentDidMount() {
+    const web3 = new Web3Local(window.web3.currentProvider)
+    const networkId = await web3.eth.net.getId()
+    if (networkId !== 1) {
+      return alert("Please switch to Mainnet")
+    }
     const leaderboardList = await getLeaderboardList(
       this.state.currentDonationAddress,
     )
     if (leaderboardList) {
-      this.setState({ leaderboardList })
+      this.setState({
+        web3,
+        leaderboardList,
+      })
     }
   }
 
@@ -356,6 +397,8 @@ export default class App extends Component {
       // Check if e.target.value is an address
     }
   }
+
+  handleMetaMask = () => {}
 
   render() {
     const { currentDonationAddress, leaderboardList, loading } = this.state
@@ -388,7 +431,9 @@ export default class App extends Component {
               Ways to Donate to {trimAddress(currentDonationAddress)}
             </LeaderboadTitle>
             <DonationItemContainer>
-              <DonationItem>
+              <DonationItem
+                onClick={() => this.setState({ showMetaMaskModal: true })}
+              >
                 <DonationItemImg src="/static/images/metamask.svg" />
                 <FieldTitleCenter>MetaMask</FieldTitleCenter>
               </DonationItem>
@@ -439,6 +484,21 @@ export default class App extends Component {
               ))}
           </LeaderboadSection>
         </ContainerTest>
+        <Overlay />
+        <Modal>
+          <AddressInputContainer>
+            <AddressInput
+              placeholder="Enter amount.."
+              onKeyUp={this.handleAddressSubmit}
+            />
+          </AddressInputContainer>
+          <AddressInputContainer>
+            <AddressInput
+              placeholder="Enter message.."
+              onKeyUp={this.handleAddressSubmit}
+            />
+          </AddressInputContainer>
+        </Modal>
       </div>
     )
   }
