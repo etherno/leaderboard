@@ -154,6 +154,11 @@ const AddressInput = styled.input`
     outline: none;
   }
 `
+
+const ModalInput = AddressInput.extend`
+  margin-bottom: 1rem;
+`
+
 const DonationItemImg = styled.img`
   width: 10rem;
   border: 1px solid rgba(70, 48, 235, 0.4);
@@ -211,13 +216,22 @@ const Modal = styled.div`
   z-index: 500;
   background-color: #ffffff;
   width: 18rem;
-  height: 18rem;
   max-width: 100%;
-  max-height: 100%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 1rem;
+`
+
+const Submit = styled.button`
+  border: 1px solid rgba(70, 48, 235, 0.4);
+  border-radius: 0.25rem;
+  box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  font-family: "Lekton";
+  font-family: "Open Sans";
+  padding: 0.5rem 1rem;
+  cursor: pointer;
 `
 
 const GeneralABI = [
@@ -486,18 +500,15 @@ export default class App extends Component {
         </ContainerTest>
         <Overlay />
         <Modal>
-          <AddressInputContainer>
-            <AddressInput
-              placeholder="Enter amount.."
-              onKeyUp={this.handleAddressSubmit}
-            />
-          </AddressInputContainer>
-          <AddressInputContainer>
-            <AddressInput
-              placeholder="Enter message.."
-              onKeyUp={this.handleAddressSubmit}
-            />
-          </AddressInputContainer>
+          <ModalInput
+            placeholder="Enter amount.."
+            onKeyUp={this.handleAddressSubmit}
+          />
+          <ModalInput
+            placeholder="Enter message.."
+            onKeyUp={this.handleAddressSubmit}
+          />
+          <Submit>Submit</Submit>
         </Modal>
       </div>
     )
