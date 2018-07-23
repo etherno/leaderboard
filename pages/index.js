@@ -374,6 +374,8 @@ export default class App extends Component {
       "0x5adf43dd006c6c36506e2b2dfa352e60002d22dc",
     web3: null,
     showMetaMaskModal: false,
+    amount: "",
+    message: "",
   }
 
   async componentDidMount() {
@@ -412,10 +414,18 @@ export default class App extends Component {
     }
   }
 
-  handleMetaMask = () => {}
+  handleMetaMask = () => {
+    console.log(this.state)
+  }
 
   render() {
-    const { currentDonationAddress, leaderboardList, loading } = this.state
+    const {
+      currentDonationAddress,
+      leaderboardList,
+      loading,
+      amount,
+      message,
+    } = this.state
 
     return (
       <div>
@@ -502,13 +512,15 @@ export default class App extends Component {
         <Modal>
           <ModalInput
             placeholder="Enter amount.."
-            onKeyUp={this.handleAddressSubmit}
+            onChange={e => this.setState({ amount: e.target.value })}
+            value={amount}
           />
           <ModalInput
             placeholder="Enter message.."
-            onKeyUp={this.handleAddressSubmit}
+            onChange={e => this.setState({ message: e.target.value })}
+            value={message}
           />
-          <Submit>Submit</Submit>
+          <Submit onClick={this.handleMetaMask}>Submit</Submit>
         </Modal>
       </div>
     )
