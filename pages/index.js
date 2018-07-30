@@ -197,7 +197,6 @@ const ContainerTest = styled.div`
 `
 
 const Overlay = styled.div`
-  pointer-events: none;
   position: fixed;
   z-index: 400;
   top: 0px;
@@ -380,6 +379,11 @@ export default class App extends Component {
 
   async componentDidMount() {
     const web3 = new Web3Local(window.web3.currentProvider)
+    if (web3) {
+      this.setState({ web3 })
+    } else {
+      return alert("Please install MetaMask")
+    }
     const networkId = await web3.eth.net.getId()
     if (networkId !== 1) {
       return alert("Please switch to Mainnet")
@@ -389,7 +393,6 @@ export default class App extends Component {
     )
     if (leaderboardList) {
       this.setState({
-        web3,
         leaderboardList,
       })
     }
@@ -414,8 +417,28 @@ export default class App extends Component {
     }
   }
 
-  handleMetaMask = () => {
-    console.log(this.state)
+  handleMetaMask = async () => {
+    const { amount, message, currentDonationAddress, web3 } = this.state
+    let donateWei = new web3.utils.BN(web3.utils.toWei(amount, "ether"))
+    let extraGas = message.length * 68
+    const accounts = await web3.eth.getAccounts()
+    if (!accounts.length) {
+      return alert("Please unlock MetaMask")
+    }
+    try {
+      alert("Pending transaction..")
+      await web3.eth.sendTransaction({
+        from: accounts[0],
+        to: currentDonationAddress,
+        value: donateWei,
+        gas: 150000 + extraGas,
+        data: web3.utils.toHex(message),
+      })
+      alert("Transaction is successful!")
+      this.setState({ showMetaMaskModal: false })
+    } catch (e) {
+      alert("An error occurred - Try again")
+    }
   }
 
   render() {
@@ -425,6 +448,7 @@ export default class App extends Component {
       loading,
       amount,
       message,
+      showMetaMaskModal,
     } = this.state
 
     return (
@@ -449,6 +473,11 @@ export default class App extends Component {
             about and extra are all fields)
           </FieldText>
         </Field> */}
+        {showMetaMaskModal && (
+          <Overlay
+            onClick={() => this.setState({ showMetaMaskModal: false })}
+          />
+        )}
         <ContainerTest>
           <DonateSection>
             <LeaderboadTitle>
@@ -508,20 +537,21 @@ export default class App extends Component {
               ))}
           </LeaderboadSection>
         </ContainerTest>
-        <Overlay />
-        <Modal>
-          <ModalInput
-            placeholder="Enter amount.."
-            onChange={e => this.setState({ amount: e.target.value })}
-            value={amount}
-          />
-          <ModalInput
-            placeholder="Enter message.."
-            onChange={e => this.setState({ message: e.target.value })}
-            value={message}
-          />
-          <Submit onClick={this.handleMetaMask}>Submit</Submit>
-        </Modal>
+        {showMetaMaskModal && (
+          <Modal>
+            <ModalInput
+              placeholder="Enter amount.."
+              onChange={e => this.setState({ amount: e.target.value })}
+              value={amount}
+            />
+            <ModalInput
+              placeholder="Enter message.."
+              onChange={e => this.setState({ message: e.target.value })}
+              value={message}
+            />
+            <Submit onClick={this.handleMetaMask}>Submit</Submit>
+          </Modal>
+        )}
       </div>
     )
   }
